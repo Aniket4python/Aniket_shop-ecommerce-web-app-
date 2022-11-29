@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block start %}
+
+{% load cart %}
+
+
+<!-- body -->
+<div class="container-fluid mt-4">
+	<div class="row">
+
+
+		<!-- filter -->
+
+		<div class="col-lg-3 mx-auto">
+			<div class="list-group">
+
+				<a href="/" class="list-group-item list-group-item-action">All Products</a>
+
+				{% for category in categories %}
+				<a href="/?category={{category.id}}"
+					class="list-group-item list-group-item-action">{{category.name}}</a>
+				{% endfor %}
+			</div>
+		</div>
+
+		<!-- all products -->
+		<div id='products' class="col-lg-9 mx-auto">
+			<div class="row mx-auto">
+				{% for prod in products %}
+				<div class="card " id={{prod.id}} style="width: 18rem;">
+				    <img class="card-img-top" src="{{prod.image.url}}" alt="Card image cap">
+					<div class="card body">
+						<p class="card-title">{{prod.name}}</p>
+						<p class="card-text"><b>{{prod.price}}</b></p>
+						
+						<div class="card-footer no-gutters">
+							{% if prod|is_in_cart:request.session.cart %}
+							<div class="row no-gutters ">
+								<form action="/#{{prod.id}}" method="POST" class="col-2">
+									{% csrf_token %}
+									<input hidden type="text" value="{{prod.id}}" name="product"></input>
+									<input type="submit" class="btn btn-block btn-primary border-right" value="+"></input>
+								</form>
+								<div class="text-center col">{{prod|cart_quantity:request.session.cart}} In cart</div>
+								<form action="/#{{prod.id}}" method="POST" class="col-2">
+									{% csrf_token %}
+									<input hidden type="text" value="{{prod.id}}" name="product"></input>
+									<input hidden type="text" value="True" name="remove"></input>
+									<input type="submit" class="btn btn-block btn-primary border-left" value="-"></input>
+								</form>
+							</div>
+							{% else %}
+							<form  action="/" method="POST">
+								{% csrf_token %}
+							<input hidden type="text" value="{{prod.id}}" name="product"></input>
+							<input  class="float-right btn btn-light form-control" type="submit" value='add to cart' ></input>
+							</form>
+							{% endif %}
+
+						</div>
+
+
+					</div>
+			</div>
+			{% endfor%}
+		</div>
+
+	</div>
+</div>
+{% endblock %}
+
